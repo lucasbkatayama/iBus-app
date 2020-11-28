@@ -1,4 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native';
+import { Icon } from 'react-native-elements';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
@@ -7,11 +9,13 @@ import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import TabOneScreen from '../screens/TabOneScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
+import TransactionsHistory from '../screens/TransactionsHistory';
+import UpdateUser from '../screens/UpdateUser';
 import { BottomTabParamList, TabOneParamList, TabTwoParamList } from '../types';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
-export default function BottomTabNavigator() {
+export default function BottomTabNavigator({ user, setUser }) {
   const colorScheme = useColorScheme();
 
   return (
@@ -19,19 +23,20 @@ export default function BottomTabNavigator() {
       initialRouteName="TabOne"
       tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}>
       <BottomTab.Screen
-        name="TabOne"
-        component={TabOneNavigator}
+        name="Início"
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
-        }}
-      />
+          tabBarIcon: ({ color }) => <TabBarIcon name="ios-home" color={color} />}}
+      >
+        {props => <TabOneNavigator {...props} user={user} setUser={setUser} />}
+      </BottomTab.Screen>
       <BottomTab.Screen
-        name="TabTwo"
-        component={TabTwoNavigator}
+        name="Perfil"
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
-        }}
-      />
+          tabBarIcon: ({ color }) => <TabBarIcon name="ios-person" color={color} />,
+      }}
+      >
+        {props => <TabTwoNavigator {...props} user={user} setUser={setUser} />}
+      </BottomTab.Screen>
     </BottomTab.Navigator>
   );
 }
@@ -46,28 +51,49 @@ function TabBarIcon(props: { name: string; color: string }) {
 // https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
 const TabOneStack = createStackNavigator<TabOneParamList>();
 
-function TabOneNavigator() {
+function TabOneNavigator({ user, setUser }) {
   return (
     <TabOneStack.Navigator>
       <TabOneStack.Screen
-        name="TabOneScreen"
-        component={TabOneScreen}
-        options={{ headerTitle: 'Tab One Title' }}
-      />
+        name="Transactions"
+        options={{ headerTitle: `Bem vindo, ${user.name}` }}
+      >
+        {props => <TabOneScreen {...props} user={user} setUser={setUser} />}
+      </TabOneStack.Screen>
     </TabOneStack.Navigator>
   );
 }
 
 const TabTwoStack = createStackNavigator<TabTwoParamList>();
 
-function TabTwoNavigator() {
+function TabTwoNavigator({ user, setUser }) {
   return (
     <TabTwoStack.Navigator>
       <TabTwoStack.Screen
         name="TabTwoScreen"
-        component={TabTwoScreen}
-        options={{ headerTitle: 'Tab Two Title' }}
-      />
+        options={({ navigation, route }) => ({
+          headerTitle: 'Perfil',
+          headerRight: () => (
+            <TouchableOpacity onPress={() => navigation.navigate('UpdateUser')} >
+              <Icon size={30} style={{ marginRight: 15 }} name="edit" />
+            </TouchableOpacity>
+          ),
+        })}
+      >
+        {props => <TabTwoScreen {...props} user={user} setUser={setUser} />}
+      </TabTwoStack.Screen>
+      <TabTwoStack.Screen
+        name="Transactions"
+        options={{ headerTitle: 'Histórico de transações' }}
+      >
+        {props => <TransactionsHistory {...props} user={user} setUser={setUser} />}
+      </TabTwoStack.Screen>
+      <TabTwoStack.Screen
+        name="UpdateUser"
+        options={{ headerTitle: 'Editar perfil' }}
+      >
+        {props => <UpdateUser {...props} user={user} setUser={setUser} />}
+      </TabTwoStack.Screen>
     </TabTwoStack.Navigator>
   );
 }

@@ -1,15 +1,60 @@
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import axios from 'axios';
+import { StyleSheet, TextInput, Dimensions, Keyboard } from 'react-native';
+import { Overlay, Button } from 'react-native-elements';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 
-export default function TabOneScreen() {
+const windowWidth = Dimensions.get('window').width;
+
+export default function TabOneScreen({ user, setUser }) {
+  const [visible, setVisible] = React.useState(false);
+  const [line, setLine] = React.useState('');
+  const [lineErr, setLineErr] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+
+  const toggleOverlay = () => {
+    setVisible(!visible);
+    setLineErr('');
+  };
+
+  const handleInputChange = (text) => {
+    setLine(text);
+  }
+
+  const purchaseLine = () => {
+    Keyboard.dismiss();
+
+    const sender = {
+      description: line,
+      user: user.email
+    };
+    setLoading(true);
+
+    axios.post('https://api-ibus.herokuapp.com/purchase', sender).then((res) => {
+      setUser({ ...user, balance: res.data.new_balance });
+      toggleOverlay();
+      setLoading(false);
+    })
+    .catch((err) => {
+      setLine('');
+      setLineErr('Código de linha inválida');
+      setLoading(false);
+    });
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/TabOneScreen.js" />
+      <Button title='Comprar passagem' onPress={toggleOverlay} />
+      <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
+        <View style={styles.inputContainer}>
+          <Text>Código da linha:</Text>
+          <TextInput onChangeText={handleInputChange} style={styles.input} />
+          <Text style={styles.lineError}>{lineErr}</Text>
+          <Button loading={loading} title='Comprar' onPress={purchaseLine} />
+        </View>
+      </Overlay>
     </View>
   );
 }
@@ -29,4 +74,17 @@ const styles = StyleSheet.create({
     height: 1,
     width: '80%',
   },
+  inputContainer: {
+    width: windowWidth * 0.8,
+    padding: 20,
+    borderRadius: 5,
+  },
+  input: {
+    borderBottomWidth: 1,
+    marginBottom: 5
+  },
+  lineError: {
+    color: 'red',
+    marginBottom: 20
+  }
 });
