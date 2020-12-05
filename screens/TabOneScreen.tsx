@@ -1,10 +1,12 @@
 import * as React from 'react';
 import axios from 'axios';
-import { StyleSheet, TextInput, Dimensions, Keyboard } from 'react-native';
+import { StyleSheet, TextInput, Dimensions, Keyboard, SafeAreaView } from 'react-native';
 import { Overlay, Button } from 'react-native-elements';
+import { WebView } from 'react-native-webview';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
+import Map from '../components/Map';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -45,17 +47,20 @@ export default function TabOneScreen({ user, setUser }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Button title='Comprar passagem' onPress={toggleOverlay} />
-      <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
-        <View style={styles.inputContainer}>
-          <Text>Código da linha:</Text>
-          <TextInput onChangeText={handleInputChange} style={styles.input} />
-          <Text style={styles.lineError}>{lineErr}</Text>
-          <Button loading={loading} title='Comprar' onPress={purchaseLine} />
-        </View>
-      </Overlay>
-    </View>
+    <>
+      <Map />
+      <SafeAreaView style={styles.container}>
+        <Button title='Comprar passagem' onPress={toggleOverlay} />
+        <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
+          <View style={styles.inputContainer}>
+            <Text>Código da linha:</Text>
+            <TextInput onChangeText={handleInputChange} style={styles.input} />
+            <Text style={styles.lineError}>{lineErr}</Text>
+            <Button loading={loading} title='Comprar' onPress={purchaseLine} />
+          </View>
+        </Overlay>
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -86,5 +91,8 @@ const styles = StyleSheet.create({
   lineError: {
     color: 'red',
     marginBottom: 20
+  },
+  webview: {
+    flex: 1,
   }
 });
