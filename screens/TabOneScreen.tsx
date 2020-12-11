@@ -10,11 +10,12 @@ import Map from '../components/Map';
 
 const windowWidth = Dimensions.get('window').width;
 
-export default function TabOneScreen({ user, setUser }) {
+export default function TabOneScreen({ user, setUser, navigation }) {
   const [visible, setVisible] = React.useState(false);
   const [line, setLine] = React.useState('');
   const [lineErr, setLineErr] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [mapLoading, setMapLoading] = React.useState(true);
 
   const toggleOverlay = () => {
     setVisible(!visible);
@@ -50,7 +51,8 @@ export default function TabOneScreen({ user, setUser }) {
     <>
       <Map />
       <SafeAreaView style={styles.container}>
-        <Button title='Comprar passagem' onPress={toggleOverlay} />
+        <Button title='Comprar passagem' onPress={toggleOverlay} buttonStyle={{ marginBottom: 10 }} />
+        <Button loading={loading} title='Teste Ponto' onPress={() => navigation.navigate('Lines')} />
         <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
           <View style={styles.inputContainer}>
             <Text>Código da linha:</Text>

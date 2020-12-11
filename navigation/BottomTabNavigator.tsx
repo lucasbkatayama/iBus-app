@@ -10,7 +10,10 @@ import useColorScheme from '../hooks/useColorScheme';
 import TabOneScreen from '../screens/TabOneScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
 import TransactionsHistory from '../screens/TransactionsHistory';
+import LinesScreen from '../screens/LinesScreen';
 import UpdateUser from '../screens/UpdateUser';
+import HoursScreen from '../screens/HoursScreen';
+import PathsScreen from '../screens/PathsScreen';
 import { BottomTabParamList, TabOneParamList, TabTwoParamList } from '../types';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
@@ -55,10 +58,28 @@ function TabOneNavigator({ user, setUser }) {
   return (
     <TabOneStack.Navigator>
       <TabOneStack.Screen
-        name="Transactions"
+        name="Home"
         options={{ headerTitle: `Bem vindo, ${user.name}` }}
       >
         {props => <TabOneScreen {...props} user={user} setUser={setUser} />}
+      </TabOneStack.Screen>
+      <TabOneStack.Screen
+        name="Lines"
+        options={{ headerTitle: 'Avenida Padre Lourenço da Costa' }}
+      >
+        {props => <LinesScreen {...props} user={user} setUser={setUser} />}
+      </TabOneStack.Screen>
+      <TabOneStack.Screen
+        name="Hours"
+        options={{ headerTitle: 'Horarios' }}
+      >
+        {props => <HoursScreen {...props} user={user} setUser={setUser} />}
+      </TabOneStack.Screen>
+      <TabOneStack.Screen
+        name="Path"
+        options={{ headerTitle: 'Trajeto' }}
+      >
+        {props => <PathsScreen {...props} user={user} setUser={setUser} />}
       </TabOneStack.Screen>
     </TabOneStack.Navigator>
   );
